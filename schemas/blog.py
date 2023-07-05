@@ -18,6 +18,7 @@ class CreateBlog(BaseModel):
 
 class ShowBlog(BaseModel):
     title: str
+    slug: str
     content: Optional[str]
     created_at: date
     modifed_at: date
