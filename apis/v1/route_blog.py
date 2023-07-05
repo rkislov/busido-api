@@ -4,7 +4,8 @@ from fastapi import Depends
 
 from db.sessions import get_db
 from schemas.blog import ShowBlog, CreateBlog
-from db.repository.blog import create_new_blog, retreive_blog
+from db.repository.blog import create_new_blog, retreive_blog, list_blogs
+from typing import List
 
 
 router = APIRouter()
@@ -22,3 +23,9 @@ async def get_blog(id: int, db: Session = Depends(get_db)):
     if not blog:
         raise HTTPException(detail=f"Запись блога с id {id} не существует", status_code=status.HTTP_404_NOT_FOUND)
     return blog
+
+
+@router.get("/blogs", response_model=List[ShowBlog])
+async def get_all_published(db: Session = Depends(get_db)):
+    blogs = list_blogs(db=db)
+    return blogs
