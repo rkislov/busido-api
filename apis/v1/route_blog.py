@@ -4,7 +4,7 @@ from fastapi import Depends
 
 from db.sessions import get_db
 from schemas.blog import ShowBlog, CreateBlog, UpdateBlog
-from db.repository.blog import create_new_blog, retreive_blog, list_blogs, update_blog
+from db.repository.blog import create_new_blog, retreive_blog, list_blogs, update_blog, delete_blog
 from typing import List
 
 
@@ -37,3 +37,12 @@ async def update_a_blog(id: int, blog: UpdateBlog, db: Session = Depends(get_db)
     if not blog:
         raise HTTPException(detail=f"Запись блога с id {id} не существует", status_code=status.HTTP_404_NOT_FOUND)
     return blog
+
+
+@router.delete("/delete/{id}")
+def delete_a_blog(id: int, db: Session = Depends(get_db)):
+    message = delete_blog(id=id, author_id=1, db=db)
+    if message.get("error"):
+        raise HTTPException(detail=message.get("error"), status_code=status.HTTP_400_BAD_REQUEST)
+    return {"msg":f"Успешно удалена запись с id {id}"}
+

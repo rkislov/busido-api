@@ -17,6 +17,7 @@ class CreateBlog(BaseModel):
 
 
 class ShowBlog(BaseModel):
+    id: int
     title: str
     slug: str
     content: Optional[str]

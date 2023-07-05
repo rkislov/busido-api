@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from schemas.blog import CreateBlog, UpdateBlog
 from db.models.blog import Blog
+from datetime import datetime
 
 
 def create_new_blog(blog: CreateBlog,db: Session, author_id: int = 1):
@@ -27,6 +28,16 @@ def update_blog(id: int, blog: UpdateBlog, author_id: int, db: Session):
         return
     blog_in_db.title = blog.title
     blog_in_db.content = blog.content
+    blog_in_db.modifed_at = datetime.now()
     db.add(blog_in_db)
     db.commit()
     return blog_in_db
+
+
+def delete_blog(id: int, author_id: int, db: Session):
+    blog_in_db = db.query(Blog).filter(Blog.id == id)
+    if not blog_in_db.first():
+        return {"error":f"не могу найти запись с id {id}"}
+    blog_in_db.delete()
+    db.commit()
+    return {"msg":f"удалена запись с id {id}"}
