@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 
 from db.sessions import get_db
-from schemas.blog import ShowBlog, CreateBlog
-from db.repository.blog import create_new_blog, retreive_blog, list_blogs
+from schemas.blog import ShowBlog, CreateBlog, UpdateBlog
+from db.repository.blog import create_new_blog, retreive_blog, list_blogs, update_blog
 from typing import List
 
 
@@ -29,3 +29,11 @@ async def get_blog(id: int, db: Session = Depends(get_db)):
 async def get_all_published(db: Session = Depends(get_db)):
     blogs = list_blogs(db=db)
     return blogs
+
+
+@router.put("/blog/{id}", response_model=ShowBlog)
+async def update_a_blog(id: int, blog: UpdateBlog, db: Session = Depends(get_db)):
+    blog = update_blog(id=id, blog=blog, author_id=1, db=db)
+    if not blog:
+        raise HTTPException(detail=f"Запись блога с id {id} не существует", status_code=status.HTTP_404_NOT_FOUND)
+    return blog
