@@ -1,14 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from core.config import settings
 from apis.base import api_router
+from sqlalchemy.orm import Session
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 
-#from db.sessions import engine
-#from db.base import Base
 
-
-#def create_tables():
-#    Base.metadata.create_all(bind=engine)
-
+from redis import asyncio as aioredis
 
 def include_router(app):
     app.include_router(api_router)
@@ -24,6 +22,13 @@ def start_application():
 app = start_application()
 
 
+
 @app.get("/")
 async def hello_api():
     return {"msg": "Hello, BusidoAPI"}
+
+
+@app.on_event("startup")
+async def startup():
+    redis = aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")

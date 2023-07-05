@@ -20,6 +20,7 @@ class Settings:
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    LOCAL_REDIS_URL: str = os.getenv("LOCAL_REDIS_URL")
 
 
 settings = Settings()
