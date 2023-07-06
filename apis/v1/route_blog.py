@@ -1,6 +1,8 @@
 from fastapi import APIRouter, status, HTTPException
 from sqlalchemy.orm import Session
 from fastapi import Depends
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 from db.sessions import get_db
 from schemas.blog import ShowBlog, CreateBlog, UpdateBlog
@@ -28,11 +30,11 @@ async def get_blog(id: int, db: Session = Depends(get_db)):
     return blog
 
 
-@router.get("/blogs", response_model=List[ShowBlog])
+@router.get("/blogs", response_model=Page[ShowBlog])
 @cache(expire=60)
 async def get_all_published(db: Session = Depends(get_db)):
     blogs = list_blogs(db=db)
-    return blogs
+    return paginate(blogs)
 
 
 @router.put("/blog/{id}", response_model=ShowBlog)
@@ -48,5 +50,5 @@ def delete_a_blog(id: int, db: Session = Depends(get_db), current_user: User = D
     message = delete_blog(id=id, author_id=current_user.id, db=db)
     if message.get("error"):
         raise HTTPException(detail=message.get("error"), status_code=status.HTTP_400_BAD_REQUEST)
-    return {"msg":f"Успешно удалена запись с id {id}"}
+    return {"msg": f"Успешно удалена запись с id {id}"}
 

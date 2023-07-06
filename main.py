@@ -1,10 +1,9 @@
 from fastapi import FastAPI, Request, Response
 from core.config import settings
 from apis.base import api_router
-from sqlalchemy.orm import Session
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
-
+from fastapi_pagination import add_pagination
 
 from redis import asyncio as aioredis
 
@@ -16,6 +15,7 @@ def start_application():
     app = FastAPI(title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION)
 #    create_tables()
     include_router(app)
+    add_pagination(app)
     return app
 
 
